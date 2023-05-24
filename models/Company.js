@@ -5,7 +5,7 @@ const companySchema = new mongoose.Schema({
     type: String,
     required: [true, "Provide name company"],
     trim: true,
-    minlength: 6,
+    minlength: [5,"Please the minimum length is 5 characters"],
     unique: true,
   },
 });

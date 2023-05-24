@@ -3,7 +3,7 @@ const User = require("../models/User");
 const getAllUsers = async function (req, res) {
   const users = await User.find({}, "-password");
 
-  if (!users) {
+  if (!users || users.length === 0) {
     res.status(404).json({
       msg: "Users not found",
     });
@@ -13,18 +13,12 @@ const getAllUsers = async function (req, res) {
 };
 
 const getById = async (req, res, next) => {
-
-  const user = await User.findOne({ _id: req.params.id }).select("-password");
-  // console.log(user)
-
-  if (!user) {
-    throw new Error(`No user with ud : ${req.params.id}`);
-  }
+  const user = await User.findById({ _id: req.params.id }).select("-password");
 
   try {
     res.status(200).json({ user });
   } catch (error) {
-    next(error);
+    console.log(error.message);
   }
 };
 
