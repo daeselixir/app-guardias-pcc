@@ -7,7 +7,11 @@ const register = async (req, res, next) => {
   const token = await user.createJWT();
 
   try {
-    res.status(201).json({ success: true, user, token });
+    res.status(201).json({
+      success: true,
+      user: { firstName: user.firstName, lastName: user.email },
+      token,
+    });
   } catch (error) {
     next(error);
   }
@@ -27,7 +31,7 @@ const login = async (req, res) => {
   }
 
   const isPassword = await user.comparePassword(password);
-  console.log(isPassword);
+  // console.log(isPassword);
 
   if (!isPassword) {
     throw new ErrorResponse("Password incorrect!");
@@ -35,12 +39,24 @@ const login = async (req, res) => {
 
   const token = user.createJWT();
 
+  res.cookie("t", token, {
+    expire: new Date() + 9999,
+  });
+
   res.status(201).json({ user: user.firstName, token: token });
+};
+
+const signout = (req, res) => {
+  console.log(res)
+  res.clearCookie("t");
+  res.json({
+    message: "Signout success",
+  });
 };
 
 //Validacion de Token
 
-const requireToken = (req,res,next) => {
+const requireToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -51,14 +67,19 @@ const requireToken = (req,res,next) => {
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
     next();
   } catch (error) {
     next(error);
   }
 };
 
+
+
+
 module.exports = {
   register,
   login,
   requireToken,
+  signout
 };
