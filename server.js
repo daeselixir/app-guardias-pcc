@@ -59,15 +59,3 @@ const start = async () => {
 
 start();
 
-// una promesa no manejada significa que en algun lugar de nuestro codigo una promesa fue rechazada
-// podemos solucionar esto con un catch pero puedo agregar una funcion que maneje el global de este tipo de error
-// con este on estamos escuchando los evento
-// es como nuestra ultima red de serguridad
-// process.on("unhandledRejection", (err) => {
-//   // para cerra la aplicacion podemos ocupar process .ext
-//   console.log("Unhandler rejection ! 🔥 shutting down...");
-//   console.log(err.name, err.message);
-//   start.close(() => {
-//     process.exit(1);
-//   });
-// });

@@ -1,7 +1,8 @@
 const User = require("../models/User");
 const ErrorResponse = require("../errors/errorResponse");
 const jwt = require("jsonwebtoken");
-const { emailRegister } = require("../utils/email");
+const { emailRegister, resetPassword } = require("../utils/email");
+const generateID = require("../utils/genID");
 
 //Create account
 const register = async (req, res, next) => {
@@ -92,7 +93,43 @@ const confirmAccount = async (req, res, next) => {
 };
 
 const forgotPassword = async (req, res) => {
-  res.send("send");
+  const { email } = req.body;
+
+  //Comprobamos si el user existe
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new ErrorResponse("El usuario no existe");
+  }
+
+  user.token = generateID();
+  await user.save();
+
+  //Enviamos email
+  resetPassword({
+    email: user.email,
+    firstName: user.firstName,
+    token: user.token,
+  });
+
+  res.json({ msg: "Hemos enviado un email con las instrucciones 😎" });
+};
+
+const newPassword = async (req, res, next) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  const user = await User.findOne({ token });
+
+  if (user) {
+    user.password = password;
+    user.token = "";
+
+    await user.save();
+    res.json({ msg: "Usuario modificado correctamente" });
+  } else {
+    throw new errorResponse("Token invalid");
+  }
 };
 
 //Validacion de Token
@@ -130,4 +167,5 @@ module.exports = {
   signout,
   forgotPassword,
   confirmAccount,
+  newPassword,
 };
