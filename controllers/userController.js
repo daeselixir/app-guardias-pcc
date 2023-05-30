@@ -16,7 +16,7 @@ const getAllUsers = async function (req, res) {
 
 // TODO : Revisar si es necesario el try catch
 const getById = async (req, res, next) => {
-  const user = await User.findById({ _id: req.params.id }).select("-password");
+  const user = await User.findById({ _id: req.params.id }).select("firstName lastName email createdAt");
 
   try {
     res.status(200).json({ user });
@@ -34,7 +34,7 @@ const updateById = async (req, res) => {
   const user = await User.findByIdAndUpdate({ _id: id }, body, {
     new: true,
     runValidators: true,
-  });
+  }).select("firstName lastName email createdAt");
 
   if (!user) {
     throw new ErrorResponse(`No user with id ${id}`);

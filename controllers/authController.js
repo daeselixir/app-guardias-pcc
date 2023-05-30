@@ -38,20 +38,24 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw new ErrorResponse("Passwords do not match o email");
+    throw new ErrorResponse("Clave o email no son correctos");
   }
 
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new ErrorResponse("Email is not available");
+    throw new ErrorResponse("Correo no es valido");
+  }
+
+  if (!user.confirmed) {
+    throw new ErrorResponse("No ha confirmado su cuenta");
   }
 
   const isPassword = await user.comparePassword(password);
   // console.log(isPassword);
 
   if (!isPassword) {
-    throw new ErrorResponse("Password incorrect!");
+    throw new ErrorResponse("Clave incorrecta!");
   }
 
   const token = user.createJWT();
@@ -72,12 +76,11 @@ const confirmAccount = async (req, res, next) => {
   if (!userConfirm) {
     throw new ErrorResponse("Falta token!");
   }
-
   const { email } = userConfirm;
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new ErrorResponse("User not found!");
+    throw new ErrorResponse("Usuario no existe!");
   }
 
   try {
@@ -89,7 +92,7 @@ const confirmAccount = async (req, res, next) => {
     next(error);
   }
 
-  res.json({ msg: "Account confirmed" });
+  res.json({ msg: "Cuenta confirmada" });
 };
 
 const forgotPassword = async (req, res) => {
@@ -128,7 +131,7 @@ const newPassword = async (req, res, next) => {
     await user.save();
     res.json({ msg: "Usuario modificado correctamente" });
   } else {
-    throw new errorResponse("Token invalid");
+    throw new ErrorResponse("Token invalid");
   }
 };
 
@@ -150,6 +153,8 @@ const requireToken = (req, res, next) => {
     next(error);
   }
 };
+
+// TODO: Terminar signout
 
 //Cierre session
 const signout = (req, res) => {

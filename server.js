@@ -26,6 +26,10 @@ app.use(morgan("tiny"));
 const authRouter = require("./routes/authRoutes");
 const companyRouter = require("./routes/companyRoutes");
 const userRoutes = require("./routes/userRoutes");
+const areaRoutes = require("./routes/areaRoutes");
+const eventRoutes = require("./routes/eventRoutes");
+const shiftRoutes = require("./routes/shiftRoutes");
+const incidentRoutes = require("./routes/incidentRoutes");
 
 //Middleware
 const notFoundMiddlware = require("./middleware/not-found");
@@ -42,13 +46,17 @@ app.get("/api/v1", (req, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/company", companyRouter);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/area", areaRoutes);
+app.use("/api/v1/incident", incidentRoutes);
+app.use("/api/v1/shift", shiftRoutes);
+app.use("/api/v1/event", eventRoutes);
 
 app.use(notFoundMiddlware);
 app.use(errorHandlerMiddleware);
 
 const start = async () => {
   try {
-    await connectDB(process.env.MONGO_URI);
+    await connectDB(process.env.MONGO_URI_DEV);
     app.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`);
     });
@@ -58,4 +66,3 @@ const start = async () => {
 };
 
 start();
-

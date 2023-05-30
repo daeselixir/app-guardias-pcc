@@ -12,10 +12,20 @@ const getAllcompany = async (req, res) => {
   res.status(200).json({ company });
 };
 
-const getCompanybyID = async (req, res) => {};
+const getCompanybyID = async (req, res) => {
+  let { id } = req.params;
+  console.log(id);
+  const company = await Company.findById({ _id: id });
+
+  if (!company) {
+    throw new ErrorResponse("No existe company");
+  }
+
+  res.json({ msg: company });
+};
 
 const createCompany = async (req, res) => {
-  const { nameCompany } = req.body;
+  const { rut, nameCompany, address } = req.body;
   const authHeader = req.headers.authorization;
 
   const token = authHeader.split(" ")[1];
@@ -26,8 +36,16 @@ const createCompany = async (req, res) => {
     throw new ErrorResponse("User ID no found");
   }
 
+  const companyExists = await Company.findOne({ rut })
+
+  if (companyExists) {
+    throw new ErrorResponse("Empresa ya existe",401)
+  }
+
   const newCompany = await Company.create({
+    rut: rut,
     nameCompany: nameCompany,
+    address: address,
     createdBy: userID,
   });
 
@@ -36,8 +54,6 @@ const createCompany = async (req, res) => {
 
 const deleteCompany = async (req, res) => {
   const { id } = req.params;
-  console.log(req.params);
-  // console.log(idCompany);
 
   const deleted = await Company.findByIdAndDelete({ _id: id });
 

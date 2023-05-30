@@ -6,14 +6,14 @@ const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
-      required: [true, "Please provide a name"],
+      required: [true, "Ingresar nombre"],
       minlength: 4,
       maxlength: 25,
       trim: true,
     },
     lastName: {
       type: String,
-      required: [true, "Please provide a lastname"],
+      required: [true, "Ingresar apellido"],
       minlength: 4,
       maxlength: 25,
       trim: true,
@@ -21,20 +21,20 @@ const userSchema = new mongoose.Schema(
     companyID: {
       type: mongoose.Types.ObjectId,
       ref: "Company",
-      required: [true, "Please provide a company name"],
+      required: [true, "Ingresar empresa"],
     },
     email: {
       type: String,
-      required: [true, "Please provide email address"],
+      required: [true, "Ingresar correo"],
       match: [
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        "Please provide valid email",
+        "Ingresar correo valido",
       ],
       unique: true,
     },
     password: {
       type: String,
-      required: [true, "Please provide password"],
+      required: [true, "Ingresar clave"],
       minlength: 6,
     },
     role: {
